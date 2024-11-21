@@ -1,0 +1,26 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    # Specify the Fedora 41 box
+    config.vm.box = "gutehall/fedora40"
+  
+    # Set the hostname
+    config.vm.hostname = "fedora40"
+  
+    # Configure static IP address
+    config.vm.network "private_network", ip: "192.168.201.13"
+  
+    # Customize VM resources
+    config.vm.provider "virtualbox" do |vb|
+      vb.name = "fedora40" # Set the VM name in VirtualBox
+      vb.memory = "2048"   # Set RAM to 2GB
+      vb.cpus = 2          # Set the number of CPUs
+    end
+  
+    # Provisioning with shell script (optional)
+    #config.vm.provision "shell", inline: <<-SHELL
+      #sudo dnf update -y
+      #echo "Fedora 41 setup is complete" > /home/vagrant/fedora41_info.txt
+    #SHELL
+  end

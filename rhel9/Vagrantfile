@@ -1,0 +1,38 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+    # Specify the Fedora 41 box
+    config.vm.box = "generic/rhel9"
+  
+    # Set the hostname
+    config.vm.hostname = "bastion"
+  
+    # Configure static IP address
+    config.vm.network "private_network", ip: "192.168.201.14"
+  
+    # Customize VM resources
+    config.vm.provider "virtualbox" do |vb|
+      vb.name = "rhel9" # Set the VM name in VirtualBox
+      vb.memory = "2048"   # Set RAM to 2GB
+      vb.cpus = 2          # Set the number of CPUs
+    end
+  
+    # Provisioning with shell script (optional)
+    config.vm.provision "shell", inline: <<-SHELL
+      useradd sysadm
+      mkdir /home/sysadm/.ssh
+      echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDpK3/Sso+tdbd+YX8Pi9gO9kneDCF/IN/DjJhBFAvWZ2ViZnpUc/x29qWpnvwEnsQSrSVu8hmvGQXREnaEGkuhBf7roo1cFz3JvtQX4N6N3gqa9RFqxmk56xRe5qLrzsK0jAqBEdCHDShGrAb3LuGqDcl77cUlt6MdZtrJ9aupI4V6y9/+MpvdOcmLFAINNbcdohrCyyinizp/adb7aXiH/GoGjRreRZBoWPKrUXQKnWtQWktiMADYZQHpC5T9gf51qJcmsE2uAJjERB6spHkaSU0PSHzWjJ5d/obZ21lIFuK24SnDYjeBCStPCU4+3NDeIQjZvG3yiYUwPfprVnm2uBWCBByQg00uCTt3gt4Vx7eTR27qEARsV/MgArYCO4vx7zGQtJyF+IuVapMJw/ebz0REUvoBzUqKgQeUgezXg4gKjBNw7+DwDMsd6fwN71506uXnhoZawJbJqPUhw7V3PBrO7BO6mhf2jJeb/fRJN1L46aMeA7PA1Ti4JB59fAc= prasanth@prassoma" > /home/sysadm/.ssh/authorized_keys
+      chmod 600 /home/sysadm/.ssh/authorized_keys
+      chmod 700 /home/sysadm/.ssh
+      chown sysadm:sysadm /home/sysadm/.ssh /home/sysadm/.ssh/authorized_keys
+      cat << EOF >> /etc/sudoers.d/sysadm
+      Defaults:sysadm !fqdn
+      Defaults:sysadm !requiretty
+      sysadm ALL=(ALL) NOPASSWD: ALL
+EOF
+      chmod 400 /etc/sudoers.d/sysadm
+      #sudo dnf update -y
+      #echo "Fedora 41 setup is complete" > /home/vagrant/fedora41_info.txt
+    SHELL
+  end
